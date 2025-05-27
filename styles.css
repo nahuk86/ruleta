@@ -1,0 +1,48 @@
+/* style.css */
+/* Reset y centrar */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html, body {
+  width: 100%;
+  height: 100%;
+  /* Fondo con imagen de Pfizer */
+  background: url('https://pfizer.com.ar/images/05a86639e81951b3b72a0c6b00102a06.png')
+    no-repeat center center fixed;
+  background-size: cover;
+  font-family: sans-serif;
+}
+
+/* Contenedor centrado en toda la pantalla */
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Canvas de la ruleta más grande y con estilo */
+#wheel {
+  width: 90vw;            /* hasta el 90% del ancho de pantalla */
+  max-width: 600px;       /* tope en dispositivos grandes */
+  aspect-ratio: 1 / 1;    /* mantiene proporción cuadrada */
+  display: block;
+  margin: 0 auto;
+  touch-action: none;
+  border-radius: 50%;     /* borde circular */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  background: #ffffff;
+}
+
+/* Mensaje de resultado destacado */
+#result {
+  margin-top: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
