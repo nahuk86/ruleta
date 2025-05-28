@@ -10,19 +10,25 @@ let angle = 0, angularVelocity = 0;
 
 // — UTILITARIOS DE SHEETS —
 async function fetchCount(category) {
-  const res = await fetch(`${SHEET_API}?category=${encodeURIComponent(category)}`);
+  const res = await fetch(
+    `${SHEET_API}?category=${encodeURIComponent(category)}`,
+    { redirect: 'follow' }
+  );
   if (!res.ok) throw new Error('Error leyendo contador');
   return (await res.json()).count;
 }
+
 async function incCount(category) {
   const res = await fetch(SHEET_API, {
     method: 'POST',
-    headers: { 'Content-Type':'application/json' },
-    body: JSON.stringify({ category })
+    // no headers personalizados → body tipo application/x-www-form-urlencoded
+    body: new URLSearchParams({ category }),
+    redirect: 'follow'      // importante, hace que siga la redirección a script.googleusercontent.com
   });
   if (!res.ok) throw new Error('Error actualizando contador');
   return (await res.json()).newCount;
 }
+
 
 // — LÓGICA DE DIBUJO —
 function resize() {
