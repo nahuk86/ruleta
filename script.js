@@ -42,7 +42,7 @@ async function incCount(category) {
 }
 
 // Categorías, colores y elementos del DOM
-const categories = ['Categoría 1','Categoría 2','Categoría 3','Categoría 4','Categoría 5'];
+const categories = ['Isla Ibupirac','Isla Nurtec','Isla Braftovi','Isla Abrysvo','Isla Zavicefta'];
 const colors     = ['#e6194b','#3cb44b','#ffe119','#4363d8','#f58231'];
 const canvas     = document.getElementById('wheel');
 const ctx        = canvas.getContext('2d');
