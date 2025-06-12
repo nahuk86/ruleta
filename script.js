@@ -12,7 +12,7 @@ let wheel;
 let spinning = false;
 let currentRotation = 0;
 const spinDuration = 5000; // 5 segundos
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwn4NhtgcMSdtylQP9sf9mYQNYwrjcntj2I2ZnFMSfo1dBQW0OgZvSyZenO2JaTPW7Ggg/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwF9BSIBfSSecbkEdwNzeJ1Sjtw7fK7Bl5d4NoiXLLjT8lrLc01KSafGqx0nMPHECRggg/exec';
 const GITHUB_PAGES_URL = 'https://nahuk86.github.io/ruleta';
 
 // Inicialización
