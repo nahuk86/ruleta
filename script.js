@@ -12,7 +12,7 @@ let wheel;
 let spinning = false;
 let currentRotation = 0;
 const spinDuration = 5000; // 5 segundos
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwF9BSIBfSSecbkEdwNzeJ1Sjtw7fK7Bl5d4NoiXLLjT8lrLc01KSafGqx0nMPHECRggg/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwJS_T0S-_ZGgmCN_T9KC8HdR63Upj_ZW5GPM-JHy74j-Em8_lK-WotjF4EvimsNaZJBw/exec';
 const GITHUB_PAGES_URL = 'https://nahuk86.github.io/ruleta';
 
 // Inicialización
@@ -22,16 +22,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateCountersDisplay();
     
     document.getElementById('spin-btn').addEventListener('click', spinWheel);
+    
+    // Agregar botón de reinicio
+    const resetBtn = document.createElement('button');
+    resetBtn.id = 'reset-btn';
+    resetBtn.textContent = 'Reiniciar Contadores';
+    resetBtn.addEventListener('click', resetCounters);
+    document.querySelector('.container').appendChild(resetBtn);
 });
 
-// Cargar datos desde Google Sheets
+// Cargar datos desde Google Sheets (usando GET)
 async function loadDataFromGoogleSheets() {
     try {
         const url = new URL(SCRIPT_URL);
         url.searchParams.append('origin', GITHUB_PAGES_URL);
-        url.searchParams.append('cache', Date.now()); // Evitar caché
+        url.searchParams.append('cache', Date.now());
         
         const response = await fetch(url, {
+            method: 'GET',
             redirect: 'follow',
             headers: {
                 'Content-Type': 'application/json'
@@ -70,14 +78,13 @@ function handleDataLoad(data) {
     });
 }
 
-// Inicializar la ruleta
+// Inicializar y dibujar la ruleta
 function initializeWheel() {
     const canvas = document.getElementById('wheel');
     wheel = canvas.getContext('2d');
     drawWheel();
 }
 
-// Dibujar la ruleta
 function drawWheel() {
     const centerX = wheel.canvas.width / 2;
     const centerY = wheel.canvas.height / 2;
@@ -86,7 +93,6 @@ function drawWheel() {
     
     wheel.clearRect(0, 0, wheel.canvas.width, wheel.canvas.height);
     
-    // Dibujar segmentos
     categories.forEach((category, index) => {
         const startAngle = index * arc + currentRotation;
         const endAngle = (index + 1) * arc + currentRotation;
@@ -98,7 +104,7 @@ function drawWheel() {
         wheel.fillStyle = category.current < category.max ? category.color : '#CCCCCC';
         wheel.fill();
         
-        // Dibujar texto
+        // Texto
         wheel.save();
         wheel.translate(centerX, centerY);
         wheel.rotate(startAngle + arc / 2);
@@ -110,11 +116,10 @@ function drawWheel() {
     });
 }
 
-// Girar la ruleta
+// Lógica para girar la ruleta
 function spinWheel() {
     if (spinning) return;
     
-    // Verificar si hay categorías disponibles
     const availableCategories = categories.filter(cat => cat.current < cat.max);
     if (availableCategories.length === 0) {
         document.getElementById('result').textContent = "Todas las categorías han alcanzado su límite";
@@ -125,7 +130,6 @@ function spinWheel() {
     document.getElementById('spin-btn').disabled = true;
     document.getElementById('result').textContent = "";
     
-    // Calcular rotación aleatoria (múltiplo de 72 grados + offset)
     const segmentAngle = 360 / categories.length;
     const randomOffset = Math.random() * segmentAngle;
     const targetSegment = Math.floor(Math.random() * availableCategories.length);
@@ -157,12 +161,11 @@ function easeOutCubic(t) {
     return (--t) * t * t + 1;
 }
 
-// Finalizar giro
+// Finalizar giro y actualizar datos
 async function finishSpin(selectedCategory) {
     spinning = false;
     document.getElementById('spin-btn').disabled = false;
     
-    // Incrementar contador
     selectedCategory.current++;
     await updateCountersInGoogleSheets();
     updateCountersDisplay();
@@ -170,7 +173,36 @@ async function finishSpin(selectedCategory) {
     document.getElementById('result').textContent = `¡Ha salido: ${selectedCategory.name}!`;
 }
 
-// Actualizar contadores en pantalla
+// Actualizar contadores (usando GET)
+async function updateCountersInGoogleSheets() {
+    const data = categories.map(cat => [cat.name, cat.max, cat.current]);
+    
+    try {
+        const url = new URL(SCRIPT_URL);
+        url.searchParams.append('action', 'update');
+        url.searchParams.append('data', JSON.stringify(data));
+        url.searchParams.append('origin', GITHUB_PAGES_URL);
+        url.searchParams.append('cache', Date.now());
+        
+        const response = await fetch(url, {
+            method: 'GET',
+            redirect: 'follow',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log("Datos actualizados en Google Sheets:", result);
+    } catch (error) {
+        console.error("Error al actualizar Google Sheets:", error);
+    }
+}
+
 function updateCountersDisplay() {
     const countersContainer = document.getElementById('counters');
     countersContainer.innerHTML = '';
@@ -187,37 +219,7 @@ function updateCountersDisplay() {
     });
 }
 
-// Actualizar contadores en Google Sheets
-async function updateCountersInGoogleSheets() {
-    const data = categories.map(cat => [cat.name, cat.max, cat.current]);
-    
-    try {
-        const response = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                action: 'update',
-                data: data,
-                origin: GITHUB_PAGES_URL
-            }),
-            redirect: 'follow'
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        console.log("Datos actualizados en Google Sheets:", result);
-    } catch (error) {
-        console.error("Error al actualizar Google Sheets:", error);
-        // Podrías agregar aquí una lógica para reintentar o notificar al usuario
-    }
-}
-
-// Función para reiniciar contadores (opcional)
+// Reiniciar contadores
 async function resetCounters() {
     if (confirm("¿Estás seguro de que quieres reiniciar todos los contadores a cero?")) {
         categories.forEach(cat => cat.current = 0);
@@ -226,12 +228,3 @@ async function resetCounters() {
         drawWheel();
     }
 }
-
-// Agregar botón de reinicio (opcional)
-document.addEventListener('DOMContentLoaded', () => {
-    const resetBtn = document.createElement('button');
-    resetBtn.id = 'reset-btn';
-    resetBtn.textContent = 'Reiniciar Contadores';
-    resetBtn.addEventListener('click', resetCounters);
-    document.querySelector('.container').appendChild(resetBtn);
-});
