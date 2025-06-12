@@ -1,48 +1,116 @@
-/* style.css */
-/* Reset y centrar */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-html, body {
-  width: 100%;
-  height: 100%;
-  /* Fondo con imagen de Pfizer */
-  background: url('https://pfizer.com.ar/images/05a86639e81951b3b72a0c6b00102a06.png')
-    no-repeat center center fixed;
-  background-size: cover;
-  font-family: sans-serif;
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
-/* Contenedor centrado en toda la pantalla */
 .container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+    text-align: center;
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
 }
 
-/* Canvas de la ruleta más grande y con estilo */
+h1 {
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.wheel-container {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    margin: 0 auto 30px;
+}
+
 #wheel {
-  width: 90vw;            /* hasta el 90% del ancho de pantalla */
-  max-width: 600px;       /* tope en dispositivos grandes */
-  aspect-ratio: 1 / 1;    /* mantiene proporción cuadrada */
-  display: block;
-  margin: 0 auto;
-  touch-action: none;
-  border-radius: 50%;     /* borde circular */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-  background: #ffffff;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Mensaje de resultado destacado */
+.center-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background-color: white;
+    border-radius: 50%;
+    z-index: 10;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.pointer {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 40px solid #ff5722;
+    z-index: 20;
+}
+
+#spin-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#spin-btn:hover {
+    background-color: #45a049;
+}
+
+#spin-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
 #result {
-  margin-top: 1.5rem;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #333;
-  text-align: center;
+    margin-top: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    min-height: 36px;
 }
 
+#counters {
+    margin-top: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.counter-item {
+    background-color: #f0f0f0;
+    padding: 10px 15px;
+    border-radius: 5px;
+    min-width: 120px;
+}
+
+.counter-item .name {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.counter-item .count {
+    color: #666;
+}
